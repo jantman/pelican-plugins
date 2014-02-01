@@ -22,7 +22,7 @@ def validate_files(pelican):
         for name in filenames:
             if should_validate(name):
                 filepath = os.path.join(dirpath, name)
-                validate(filepath)
+                validate(str(filepath))
 
 
 def validate(filename):
