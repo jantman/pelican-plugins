@@ -8,6 +8,7 @@ from pelican import signals
 import logging
 import os
 import time
+from xml.sax import SAXParseException
 
 LOG = logging.getLogger(__name__)
 
@@ -41,18 +42,21 @@ def validate(filename):
     LOG.info("Validating: {0}".format(filename))
 
     # call w3c webservice
-    vld.validate_file(filename)
+    try:
+        vld.validate_file(filename)
+    except SAXParseException, e:
+        LOG.error(u'caught SAXParseException for file {fname}: {err}'.format(fname=filename, err=str(e)))
+        return False
 
     # display errors and warning
     for err in vld.errors:
         LOG.error(u'file: {fname} line: {line}; col: {col}; message: {message}'.
-                  format(fname=filename, line=err['line'], col=err['col'], message=h.unescape(err['message']))
+                  format(fname=filename, line=err.get('line', ''), col=err.get('col', ''), message=h.unescape(err.get('message', '')))
                   )
     for err in vld.warnings:
         LOG.warning(u'file: {fname} line: {line}; col: {col}; message: {message}'.
-                  format(fname=filename, line=err['line'], col=err['col'], message=h.unescape(err['message']))
+                  format(fname=filename, line=err.get('line', ''), col=err.get('col', ''), message=h.unescape(err.get('message', '')))
                   )
-
 
 def should_validate(filename):
     """Check if the filename is a type of file that should be validated.
