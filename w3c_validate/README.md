@@ -17,6 +17,21 @@ are displayed. For example:
 flag. Otherwise, you will see errors (if any) but not the file currently being
 validated.
 
+**Warning**: The W3C Markup Validator is a free public service, and imposes
+  rate limiting on requests. They don't seem to publish what the limits are,
+  but running a blog with ~300 posts through it more than once currently
+  results in an IP ban for some amount of time. There are two Pelican settings
+  that can be used to help prevent this:
+
+* `W3C_SLEEP` - is a float number of seconds to sleep between each file
+  validation. At the moment, setting this to any value over 1.0 seems to help
+  quite a bit.
+* `W3C_VALIDATOR_URL` - The W3C Markup Validator is open source, and includes
+  instructions for installing it locally. Many Linux distributions include a
+  `w3c-markup-validator` package. If you have a local markup validator, you
+  can set this variable to use it instead of the public version (and therefore
+  not have any rate limiting).
+
 ## Dependencies
 
 * [py_w3c](https://pypi.python.org/pypi/py_w3c/0.1.0), which can be installed with pip:
