@@ -7,6 +7,7 @@ W3C HTML Validator plugin for genrated content.
 from pelican import signals
 import logging
 import os
+import time
 
 LOG = logging.getLogger(__name__)
 
@@ -23,7 +24,8 @@ def validate_files(pelican):
             if should_validate(name):
                 filepath = os.path.join(dirpath, name)
                 validate(str(filepath))
-
+                intersleep = pelican.settings.get('W3C_SLEEP', 0.0)
+                time.sleep(intersleep)
 
 def validate(filename):
     """
@@ -43,13 +45,13 @@ def validate(filename):
 
     # display errors and warning
     for err in vld.errors:
-        LOG.error(u'line: {0}; col: {1}; message: {2}'.
-                  format(err['line'], err['col'], h.unescape(err['message']))
+        LOG.error(u'file: {fname} line: {line}; col: {col}; message: {message}'.
+                  format(fname=filename, line=err['line'], col=err['col'], message=h.unescape(err['message']))
                   )
     for err in vld.warnings:
-        LOG.warning(u'line: {0}; col: {1}; message: {2}'.
-                    format(err['line'], err['col'], h.unescape(err['message']))
-                    )
+        LOG.warning(u'file: {fname} line: {line}; col: {col}; message: {message}'.
+                  format(fname=filename, line=err['line'], col=err['col'], message=h.unescape(err['message']))
+                  )
 
 
 def should_validate(filename):
