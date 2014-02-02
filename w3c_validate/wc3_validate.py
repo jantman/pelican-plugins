@@ -24,11 +24,11 @@ def validate_files(pelican):
         for name in filenames:
             if should_validate(name):
                 filepath = os.path.join(dirpath, name)
-                validate(str(filepath))
+                validate(str(filepath), pelican)
                 intersleep = pelican.settings.get('W3C_SLEEP', 0.0)
                 time.sleep(intersleep)
 
-def validate(filename):
+def validate(filename, pelican):
     """
     Use W3C validator service: https://bitbucket.org/nmb10/py_w3c/ .
     :param filename: the filename to validate
@@ -38,7 +38,12 @@ def validate(filename):
 
     h = HTMLParser.HTMLParser()  # for unescaping WC3 messages
 
-    vld = HTMLValidator()
+    try:
+        v_url = pelican.settings['W3C_VALIDATOR_URL']
+        vld = HTMLValidator(validator_url=v_url)
+    except KeyError:
+        vld = HTMLValidator()
+
     LOG.info("Validating: {0}".format(filename))
 
     # call w3c webservice
